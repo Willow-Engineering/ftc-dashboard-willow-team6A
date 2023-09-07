@@ -27,6 +27,17 @@ public class Variable_FMwithTampering extends OpMode {
 
     @Override
     public void loop() {
+        telemetry.addData("Left Stick x", gamepad1.left_stick_x);
+        telemetry.addData("Left Stick y", gamepad1.left_stick_y);
+        telemetry.addData("A button", gamepad1.a);
+        double speedForward = -gamepad1.left_stick_y / 2.0;
+        telemetry.addData("speed Forward", speedForward);
 
+        if(gamepad1.left_stick_y < 0) {
+            telemetry.addData("Left Stick", " is Negative");
+        }
+        else{
+            telemetry.addData("Left Stick", " is Negative");
+        }
     }
 }

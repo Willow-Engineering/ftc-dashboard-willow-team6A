@@ -4,14 +4,17 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 
 @TeleOp()
 public class Variable_FMwithTampering extends OpMode {
+    //Members
+    private DcMotor motor1;
+
     @Override
     public void init() {
-
-
+        motor1 = hardwareMap.get(DcMotor.class, "motor1");
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
@@ -54,11 +57,15 @@ public class Variable_FMwithTampering extends OpMode {
             telemetry.addData("Forward Speed: ", speedForward);
             //turbomode note lolgjhklfgahjefsadfhfbxcm
         }
-        boolean button2_pressed = gamepad1.b;
+        boolean button2_pressed = gamepad1.x;
         while (!button2_pressed) {
             gamepad1.x = gamepad1.y;
             gamepad1.y = gamepad1.x;
             //crazymode note
+        }
+        if (gamepad1.b) {
+            motor1.setPower(1);
+
         }
         }
     }

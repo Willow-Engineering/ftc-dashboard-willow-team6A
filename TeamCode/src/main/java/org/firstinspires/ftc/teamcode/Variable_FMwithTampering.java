@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 
 @TeleOp()
@@ -45,20 +46,29 @@ public class Variable_FMwithTampering extends OpMode {
         else{
             telemetry.addData("Left Stick", " is Positive");
         }
+
         boolean button_pressed = gamepad1.a;
+
         if(!button_pressed) {
             gamepad1.left_stick_y = (float) (gamepad1.left_stick_y * .5);
         }
         else{
             gamepad1.left_stick_y = (float) (gamepad1.left_stick_y * 1);
             telemetry.addData("Forward Speed: ", speedForward);
-            //turbomode note lolgjhklfgahjefsadfhfbxcm
+
         }
         boolean button2_pressed = gamepad1.b;
+
         while (!button2_pressed) {
             gamepad1.x = gamepad1.y;
             gamepad1.y = gamepad1.x;
             //crazymode note
         }
+
+        if (button2_pressed) {
+            motor1.setPower(1)
+            //crazymode note
+        }
+        //If driver presses 'b' run motor1
         }
     }

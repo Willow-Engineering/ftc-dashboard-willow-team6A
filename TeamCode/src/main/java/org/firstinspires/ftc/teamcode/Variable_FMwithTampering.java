@@ -43,7 +43,22 @@ public class Variable_FMwithTampering extends OpMode {
             telemetry.addData("Left Stick", " is Negative");
         }
         else{
-            telemetry.addData("Left Stick", " is Negative");
+            telemetry.addData("Left Stick", " is Positive");
+        }
+        boolean button_pressed = gamepad1.a;
+        if(!button_pressed) {
+            gamepad1.left_stick_y = (float) (gamepad1.left_stick_y * .5);
+        }
+        else{
+            gamepad1.left_stick_y = (float) (gamepad1.left_stick_y * 1);
+            telemetry.addData("Forward Speed: ", speedForward);
+            //turbomode note lolgjhklfgahjefsadfhfbxcm
+        }
+        boolean button2_pressed = gamepad1.b;
+        while (!button2_pressed) {
+            gamepad1.x = gamepad1.y;
+            gamepad1.y = gamepad1.x;
+            //crazymode note
+        }
         }
     }
-}

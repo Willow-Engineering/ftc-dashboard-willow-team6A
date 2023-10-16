@@ -29,10 +29,13 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.Gyroscope;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -50,17 +53,25 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Linear OpMode: FM")
+@TeleOp(name="BasicBot_Linear_FM")
 //@Disabled
-public class BasicOpMode_Linear extends LinearOpMode {
+public class BasicBot_Linear_FM extends LinearOpMode {
 
-    // Declare OpMode members.
+    // Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
-
+    private DcMotorEx arm = null;
+    private Servo claw;
+    private Gyroscope imu;
+    private DigitalChannel touch;
+    static final double COUNTS_PER_MOTOR_REV = 288;
+    static final double GEAR_REDUCTION = 2.7778;
+    static final double COUNTS_PER_GEAR_REV = COUNTS_PER_MOTOR_REV * GEAR_REDUCTION;
+    static final double COUNTS_PER_DEGREE = COUNTS_PER_GEAR_REV/360;
     @Override
     public void runOpMode() {
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -69,6 +80,12 @@ public class BasicOpMode_Linear extends LinearOpMode {
         // step (using the FTC Robot Controller app on the phone).
         leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        arm = hardwareMap.get(DcMotorEx.class, "arm");
+        claw = hardwareMap.get(Servo.class, "claw");
+        imu = hardwareMap.get(Gyroscope.class, "imu");
+        touch = hardwareMap.get(DigitalChannel.class, "touch");
+        int minPosition = 0;
+        int maxPosition = (int)(COUNTS_PER_DEGREE *45);
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -79,11 +96,33 @@ public class BasicOpMode_Linear extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
+        arm.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+
+        if(gamepad1.a) {
+            arm.setTargetPosition(300);
+            arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            arm.setVelocity(200);
+        }
 
         // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
-
-            // Setup a variable for each drive wheel to save power level for telemetry
+        if (gamepad1.dpad_up && arm.getCurrentPosition() < maxPosition) {
+            arm.setPower(0.5);
+        }
+        else if (gamepad1.dpad_down && arm.getCurrentPosition() > minPosition) {
+            arm.setPower(-0.5);
+        }
+        else if (gamepad1.a) {
+            arm.setPower(-0.5);
+        }
+        else {
+            arm.setPower(0);
+        }
+        if (!touch.getState()) {
+            arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
+        telemetry.addData("Arm Test", arm.getCurrentPosition());
+        telemetry.update();
+        // Setup a variable for each drive wheel to save power level for telemetry
             double leftPower;
             double rightPower;
 
@@ -109,7 +148,7 @@ public class BasicOpMode_Linear extends LinearOpMode {
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+            telemetry.addData("Encoder value", arm.getCurrentPosition());
             telemetry.update();
         }
-    }
 }

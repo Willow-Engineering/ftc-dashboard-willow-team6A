@@ -111,6 +111,11 @@ public class BasicBot_Linear_FM extends LinearOpMode {
         runtime.reset();
         arm.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
+        if(gamepad1.x){
+            claw1.setPosition(left_claw_open);
+            claw2.setPosition(right_claw_open);
+        }
+        
         if(gamepad1.a) {
             arm.setTargetPosition(300);
             arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
@@ -158,10 +163,6 @@ public class BasicBot_Linear_FM extends LinearOpMode {
             rightRear.setPower(rightPower);
             rightFront.setPower(rightPower);
 
-            if(gamepad1.x){
-                claw1.setPosition(left_claw_open);
-                claw2.setPosition(right_claw_open);
-            }
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);

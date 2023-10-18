@@ -71,7 +71,6 @@ public class BasicBot_Linear_FM extends LinearOpMode {
     private Servo claw2;
     public static int left_claw_open = 50;
     public static int right_claw_open = 50;
-
     static final double COUNTS_PER_MOTOR_REV = 288;
     static final double GEAR_REDUCTION = 2.7778;
     static final double COUNTS_PER_GEAR_REV = COUNTS_PER_MOTOR_REV * GEAR_REDUCTION;

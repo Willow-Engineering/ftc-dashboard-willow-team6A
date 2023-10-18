@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -62,13 +63,11 @@ public class BasicBot_Linear_FM extends LinearOpMode {
 
     // Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftFront = null;
-    private DcMotor leftRear = null;
-    private DcMotor rightFront = null;
-    private DcMotor rightRear = null;
+    private DcMotor leftDrive = null;
+    private DcMotor rightDrive = null;
     private DcMotorEx arm = null;
-    private Servo claw1;
-    private Servo claw2;
+    private Servo claw1 = null;
+    private Servo claw2 = null;
     public static int left_claw_open = 50;
     public static int right_claw_open = 50;
     static final double COUNTS_PER_MOTOR_REV = 288;
@@ -86,10 +85,8 @@ public class BasicBot_Linear_FM extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        leftFront  = hardwareMap.get(DcMotor.class, "leftFront");
-        leftRear  = hardwareMap.get(DcMotor.class, "leftRear");
-        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-        rightRear = hardwareMap.get(DcMotor.class, "rightRear");
+        leftDrive  = hardwareMap.get(DcMotor.class, "leftDrive");
+        rightDrive = hardwareMap.get(DcMotor.class, "rightRear");
         arm = hardwareMap.get(DcMotorEx.class, "arm");
         claw1 = hardwareMap.get(Servo.class, "claw1");
         claw2 = hardwareMap.get(Servo.class, "claw2");
@@ -100,44 +97,37 @@ public class BasicBot_Linear_FM extends LinearOpMode {
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        leftFront.setDirection(DcMotor.Direction.REVERSE);
-        leftRear.setDirection(DcMotor.Direction.REVERSE);
-        rightFront.setDirection(DcMotor.Direction.FORWARD);
-        rightRear.setDirection(DcMotor.Direction.FORWARD);
+        leftDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightDrive.setDirection(DcMotor.Direction.FORWARD);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
         arm.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
-        if(gamepad1.x){
-            claw1.setPosition(left_claw_open);
-            claw2.setPosition(right_claw_open);
-        }
-        
-        if(gamepad1.a) {
-            arm.setTargetPosition(300);
-            arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            arm.setVelocity(200);
-        }
+        while(opModeIsActive()) {
+            if (gamepad1.x) {
+                claw1.setPosition(left_claw_open);
+                claw2.setPosition(right_claw_open);
+            }
 
-        // run until the end of the match (driver presses STOP)
-        if (gamepad1.dpad_up && arm.getCurrentPosition() < maxPosition) {
-            arm.setPower(0.5);
-        }
-        else if (gamepad1.dpad_down && arm.getCurrentPosition() > minPosition) {
-            arm.setPower(-0.5);
-        }
-        else if (gamepad1.a) {
-            arm.setPower(-0.5);
-        }
-        else {
-            arm.setPower(0);
-        }
+            if (gamepad1.a) {
+                arm.setTargetPosition(300);
+                arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+                arm.setVelocity(200);
+            }
 
-        telemetry.addData("Arm Test", arm.getCurrentPosition());
-        telemetry.update();
-        // Setup a variable for each drive wheel to save power level for telemetry
+            // run until the end of the match (driver presses STOP)
+            if (gamepad1.dpad_up && arm.getCurrentPosition() < maxPosition) {
+                arm.setPower(0.5);
+            } else if (gamepad1.dpad_down && arm.getCurrentPosition() > minPosition) {
+                arm.setPower(-0.5);
+            } else if (gamepad1.a) {
+                arm.setPower(-0.5);
+            } else {
+                arm.setPower(0);
+            }
+            // Setup a variable for each drive wheel to save power level for telemetry
             double leftPower;
             double rightPower;
 
@@ -147,26 +137,27 @@ public class BasicBot_Linear_FM extends LinearOpMode {
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
             double drive = -gamepad1.left_stick_y;
-            double turn  =  gamepad1.right_stick_x;
-            leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
-            rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
+            double turn = gamepad1.right_stick_x;
+            leftPower = Range.clip(drive + turn, -1.0, 1.0);
+            rightPower = Range.clip(drive - turn, -1.0, 1.0);
 
             // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
-            leftPower  = -gamepad1.left_stick_y ;
-            rightPower = -gamepad1.right_stick_y ;
+            leftPower = -gamepad1.left_stick_y;
+            rightPower = -gamepad1.right_stick_y;
 
             // Send calculated power to wheels
-            leftRear.setPower(leftPower);
-            leftFront.setPower(leftPower);
-            rightRear.setPower(rightPower);
-            rightFront.setPower(rightPower);
+            leftDrive.setPower(leftPower);
+            rightDrive.setPower(rightPower);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
             telemetry.addData("Encoder value", arm.getCurrentPosition());
+            telemetry.addData("Arm Test", arm.getCurrentPosition());
             telemetry.update();
+            telemetry.update();
+        }
         }
 
     }

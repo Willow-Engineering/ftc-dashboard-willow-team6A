@@ -86,7 +86,7 @@ public class BasicBot_Linear_FM extends LinearOpMode {
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
         leftDrive  = hardwareMap.get(DcMotor.class, "leftDrive");
-        rightDrive = hardwareMap.get(DcMotor.class, "rightRear");
+        rightDrive = hardwareMap.get(DcMotor.class, "rightDrive");
         arm = hardwareMap.get(DcMotorEx.class, "arm");
         claw1 = hardwareMap.get(Servo.class, "claw1");
         claw2 = hardwareMap.get(Servo.class, "claw2");

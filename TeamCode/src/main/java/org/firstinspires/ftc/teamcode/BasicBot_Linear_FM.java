@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -54,21 +56,28 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name="BasicBot_Linear_FM")
+@Config
 //@Disabled
 public class BasicBot_Linear_FM extends LinearOpMode {
 
     // Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
+    private DcMotor leftFront = null;
+    private DcMotor leftRear = null;
+    private DcMotor rightFront = null;
+    private DcMotor rightRear = null;
     private DcMotorEx arm = null;
-    private Servo claw;
-    private Gyroscope imu;
-    private DigitalChannel touch;
+    private Servo claw1;
+    private Servo claw2;
+    public static int left_claw_open = 50;
+    public static int right_claw_open = 50;
+
     static final double COUNTS_PER_MOTOR_REV = 288;
     static final double GEAR_REDUCTION = 2.7778;
     static final double COUNTS_PER_GEAR_REV = COUNTS_PER_MOTOR_REV * GEAR_REDUCTION;
     static final double COUNTS_PER_DEGREE = COUNTS_PER_GEAR_REV/360;
+
+
     @Override
     public void runOpMode() {
 
@@ -78,20 +87,24 @@ public class BasicBot_Linear_FM extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        leftFront  = hardwareMap.get(DcMotor.class, "leftFront");
+        leftRear  = hardwareMap.get(DcMotor.class, "leftRear");
+        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
+        rightRear = hardwareMap.get(DcMotor.class, "rightRear");
         arm = hardwareMap.get(DcMotorEx.class, "arm");
-        claw = hardwareMap.get(Servo.class, "claw");
-        imu = hardwareMap.get(Gyroscope.class, "imu");
-        touch = hardwareMap.get(DigitalChannel.class, "touch");
+        claw1 = hardwareMap.get(Servo.class, "claw1");
+        claw2 = hardwareMap.get(Servo.class, "claw2");
+
         int minPosition = 0;
         int maxPosition = (int)(COUNTS_PER_DEGREE *45);
-
+        FtcDashboard dashboard = FtcDashboard.getInstance();
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftRear.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        rightRear.setDirection(DcMotor.Direction.FORWARD);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -117,9 +130,7 @@ public class BasicBot_Linear_FM extends LinearOpMode {
         else {
             arm.setPower(0);
         }
-        if (!touch.getState()) {
-            arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
+
         telemetry.addData("Arm Test", arm.getCurrentPosition());
         telemetry.update();
         // Setup a variable for each drive wheel to save power level for telemetry
@@ -138,17 +149,24 @@ public class BasicBot_Linear_FM extends LinearOpMode {
 
             // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
-            //leftPower  = -gamepad1.left_stick_y ;
-            //rightPower = -gamepad1.right_stick_y ;
+            leftPower  = -gamepad1.left_stick_y ;
+            rightPower = -gamepad1.right_stick_y ;
 
             // Send calculated power to wheels
-            leftDrive.setPower(leftPower);
-            rightDrive.setPower(rightPower);
+            leftRear.setPower(leftPower);
+            leftFront.setPower(leftPower);
+            rightRear.setPower(rightPower);
+            rightFront.setPower(rightPower);
 
+            if(gamepad1.x){
+                claw1.setPosition(left_claw_open);
+                claw2.setPosition(right_claw_open);
+            }
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
             telemetry.addData("Encoder value", arm.getCurrentPosition());
             telemetry.update();
         }
-}
+
+    }

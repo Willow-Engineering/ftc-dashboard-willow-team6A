@@ -71,6 +71,8 @@ public class BasicBot_Linear_FM extends LinearOpMode {
     private Servo claw2 = null;
     public static int left_claw_open = 50;
     public static int right_claw_open = 50;
+    public static int left_claw_close = -50;
+    public static int right_claw_close = -50;
     static final double COUNTS_PER_MOTOR_REV = 288;
     static final double GEAR_REDUCTION = 2.7778;
     static final double COUNTS_PER_GEAR_REV = COUNTS_PER_MOTOR_REV * GEAR_REDUCTION;
@@ -107,9 +109,17 @@ public class BasicBot_Linear_FM extends LinearOpMode {
         arm.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
         while(opModeIsActive()) {
-            if (gamepad1.x) {
+            if (gamepad1.y) {
                 claw1.setPosition(left_claw_open);
+            }
+            if (gamepad1.x) {
                 claw2.setPosition(right_claw_open);
+            }
+            if (gamepad1.b){
+                claw2.setPosition(right_claw_close);
+            }
+            if (gamepad1.right_bumper) {
+                claw1.setPosition(left_claw_close);
             }
 
             if (gamepad1.a) {
@@ -120,11 +130,9 @@ public class BasicBot_Linear_FM extends LinearOpMode {
 
             // run until the end of the match (driver presses STOP)
             if (gamepad1.dpad_up && arm.getCurrentPosition() < maxPosition) {
-                arm.setPower(0.5);
+                arm.setPower(-0.8);
             } else if (gamepad1.dpad_down && arm.getCurrentPosition() > minPosition) {
-                arm.setPower(-0.5);
-            } else if (gamepad1.a) {
-                arm.setPower(-0.5);
+                arm.setPower(0.8);
             } else {
                 arm.setPower(0);
             }

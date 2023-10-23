@@ -69,8 +69,8 @@ public class BasicBot_Linear_FM extends LinearOpMode {
     private DcMotorEx arm = null;
     private Servo claw1 = null;
     private Servo claw2 = null;
-    public static int left_claw_open = 50;
-    public static int right_claw_open = 50;
+    public static int left_claw_open = -90;
+    public static int right_claw_open = -90;
     public static int left_claw_close = -50;
     public static int right_claw_close = -50;
     static final double COUNTS_PER_MOTOR_REV = 288;
@@ -108,9 +108,17 @@ public class BasicBot_Linear_FM extends LinearOpMode {
         runtime.reset();
         arm.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
+        int temp = 100;
+        arm.setTargetPosition(temp);
+        arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        arm.setVelocity(200);
+
         while(opModeIsActive()) {
             if (gamepad1.y) {
                 claw1.setPosition(left_claw_open);
+            }
+            if (gamepad1.right_bumper) {
+                claw1.setPosition(left_claw_close);
             }
             if (gamepad1.x) {
                 claw2.setPosition(right_claw_open);
@@ -118,24 +126,21 @@ public class BasicBot_Linear_FM extends LinearOpMode {
             if (gamepad1.b){
                 claw2.setPosition(right_claw_close);
             }
-            if (gamepad1.right_bumper) {
-                claw1.setPosition(left_claw_close);
-            }
-
-            if (gamepad1.a) {
-                arm.setTargetPosition(300);
-                arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-                arm.setVelocity(200);
-            }
 
             // run until the end of the match (driver presses STOP)
             if (gamepad1.dpad_up && arm.getCurrentPosition() < maxPosition) {
-                arm.setPower(-0.8);
-            } else if (gamepad1.dpad_down && arm.getCurrentPosition() > minPosition) {
-                arm.setPower(0.8);
-            } else {
-                arm.setPower(0);
+                temp = arm.getCurrentPosition();
+                arm.setTargetPosition(temp+10);
             }
+            else if (gamepad1.dpad_down && arm.getCurrentPosition() > minPosition) {
+                temp = arm.getCurrentPosition();
+                arm.setTargetPosition(temp-10);
+            }
+            else if (arm.getCurrentPosition()< minPosition || arm.getCurrentPosition() > maxPosition){
+                temp = 100;
+                arm.setTargetPosition(temp);
+            }
+
             // Setup a variable for each drive wheel to save power level for telemetry
             double leftPower;
             double rightPower;

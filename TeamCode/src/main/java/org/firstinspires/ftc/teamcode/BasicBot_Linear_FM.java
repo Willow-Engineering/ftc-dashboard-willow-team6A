@@ -108,7 +108,8 @@ public class BasicBot_Linear_FM extends LinearOpMode {
         runtime.reset();
         arm.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
-        int temp = 100;
+        int temp = arm.getCurrentPosition();
+        temp = temp + 10;
         arm.setTargetPosition(temp);
         arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         arm.setVelocity(200);

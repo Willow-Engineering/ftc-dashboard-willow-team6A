@@ -77,6 +77,8 @@ public class BasicBot_Linear_FM extends LinearOpMode {
     static final double GEAR_REDUCTION = 2.7778;
     static final double COUNTS_PER_GEAR_REV = COUNTS_PER_MOTOR_REV * GEAR_REDUCTION;
     static final double COUNTS_PER_DEGREE = COUNTS_PER_GEAR_REV/360;
+    public int minPosition = 0;
+    public int maxPosition = 500;
 
 
     @Override
@@ -94,8 +96,7 @@ public class BasicBot_Linear_FM extends LinearOpMode {
         claw1 = hardwareMap.get(Servo.class, "claw1");
         claw2 = hardwareMap.get(Servo.class, "claw2");
 
-        int minPosition = 0;
-        int maxPosition = (int)(COUNTS_PER_DEGREE *45);
+
         FtcDashboard dashboard = FtcDashboard.getInstance();
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -128,18 +129,21 @@ public class BasicBot_Linear_FM extends LinearOpMode {
                 claw2.setPosition(right_claw_close);
             }
 
+            maxPosition = arm.getCurrentPosition();
+            minPosition = maxPosition - 500;
+
             // run until the end of the match (driver presses STOP)
-            if (gamepad1.dpad_up && arm.getCurrentPosition() < maxPosition) {
+            if (gamepad1.dpad_down) {
                 temp = arm.getCurrentPosition();
-                arm.setTargetPosition(temp+10);
+                arm.setTargetPosition(temp+70);
+                arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+                arm.setPower(0.5);
             }
-            else if (gamepad1.dpad_down && arm.getCurrentPosition() > minPosition) {
+            else if (gamepad1.dpad_up) {
                 temp = arm.getCurrentPosition();
-                arm.setTargetPosition(temp-10);
-            }
-            else if (arm.getCurrentPosition()< minPosition || arm.getCurrentPosition() > maxPosition){
-                temp = 100;
-                arm.setTargetPosition(temp);
+                arm.setTargetPosition(temp-70);
+                arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+                arm.setPower(0.5);
             }
 
             // Setup a variable for each drive wheel to save power level for telemetry

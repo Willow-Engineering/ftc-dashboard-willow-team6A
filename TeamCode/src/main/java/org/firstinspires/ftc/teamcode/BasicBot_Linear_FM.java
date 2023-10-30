@@ -31,9 +31,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -69,10 +71,10 @@ public class BasicBot_Linear_FM extends LinearOpMode {
     private DcMotorEx arm = null;
     private Servo claw1 = null;
     private Servo claw2 = null;
-    public static int left_claw_open = -90;
-    public static int right_claw_open = -90;
-    public static int left_claw_close = -50;
-    public static int right_claw_close = -50;
+    public static int left_claw_open = 0;
+    public static int right_claw_open = 5;
+    public static int left_claw_close = 5;
+    public static int right_claw_close = 0;
     static final double COUNTS_PER_MOTOR_REV = 288;
     static final double GEAR_REDUCTION = 2.7778;
     static final double COUNTS_PER_GEAR_REV = COUNTS_PER_MOTOR_REV * GEAR_REDUCTION;
@@ -118,15 +120,11 @@ public class BasicBot_Linear_FM extends LinearOpMode {
         while(opModeIsActive()) {
             if (gamepad1.y) {
                 claw1.setPosition(left_claw_open);
-            }
-            if (gamepad1.right_bumper) {
-                claw1.setPosition(left_claw_close);
-            }
-            if (gamepad1.x) {
                 claw2.setPosition(right_claw_open);
             }
             if (gamepad1.b){
                 claw2.setPosition(right_claw_close);
+                claw1.setPosition(left_claw_close);
             }
 
             maxPosition = arm.getCurrentPosition();
@@ -174,7 +172,6 @@ public class BasicBot_Linear_FM extends LinearOpMode {
             telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
             telemetry.addData("Encoder value", arm.getCurrentPosition());
             telemetry.addData("Arm Test", arm.getCurrentPosition());
-            telemetry.update();
             telemetry.update();
         }
         }

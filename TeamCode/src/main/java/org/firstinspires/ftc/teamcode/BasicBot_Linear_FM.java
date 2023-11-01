@@ -118,6 +118,7 @@ public class BasicBot_Linear_FM extends LinearOpMode {
         while(opModeIsActive()) {
             if (gamepad1.y) {
                 claw1.setPosition(left_claw_open);
+                claw1. 
             }
             if (gamepad1.right_bumper) {
                 claw1.setPosition(left_claw_close);

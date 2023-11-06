@@ -29,15 +29,11 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import android.text.method.Touch;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -45,7 +41,6 @@ import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 
 //whoever changed the motors to leftFront and leftRear instead of leftDrive and same for the right motor, please don't do it again.
 
@@ -74,19 +69,16 @@ public class BasicBot_Linear_FM extends LinearOpMode {
     private DcMotorEx arm = null;
     private Servo claw1 = null;
     private Servo claw2 = null;
-    TouchSensor touch;
-    public static int left_claw_open = 0;
-    public static int right_claw_open = 5;
-    public static int left_claw_close = 5;
-    public static int right_claw_close = 0;
+    public static int left_claw_open = -90;
+    public static int right_claw_open = -90;
+    public static int left_claw_close = -50;
+    public static int right_claw_close = -50;
     static final double COUNTS_PER_MOTOR_REV = 288;
     static final double GEAR_REDUCTION = 2.7778;
     static final double COUNTS_PER_GEAR_REV = COUNTS_PER_MOTOR_REV * GEAR_REDUCTION;
     static final double COUNTS_PER_DEGREE = COUNTS_PER_GEAR_REV/360;
     public int minPosition = 0;
     public int maxPosition = 500;
-
-
 
 
     @Override
@@ -103,9 +95,6 @@ public class BasicBot_Linear_FM extends LinearOpMode {
         arm = hardwareMap.get(DcMotorEx.class, "arm");
         claw1 = hardwareMap.get(Servo.class, "claw1");
         claw2 = hardwareMap.get(Servo.class, "claw2");
-        touch = hardwareMap.get(TouchSensor.class, "touch");
-
-
 
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -126,21 +115,19 @@ public class BasicBot_Linear_FM extends LinearOpMode {
         arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         arm.setVelocity(200);
 
-
-        if(touch.isPressed()){
-            telemetry.addData("Button Pressed: ", "True");
-        }
-        else{
-            telemetry.addData("Button Pressed: ", "False");
-        }
         while(opModeIsActive()) {
             if (gamepad1.y) {
                 claw1.setPosition(left_claw_open);
+                claw1. 
+            }
+            if (gamepad1.right_bumper) {
+                claw1.setPosition(left_claw_close);
+            }
+            if (gamepad1.x) {
                 claw2.setPosition(right_claw_open);
             }
             if (gamepad1.b){
                 claw2.setPosition(right_claw_close);
-                claw1.setPosition(left_claw_close);
             }
 
             maxPosition = arm.getCurrentPosition();
@@ -177,8 +164,8 @@ public class BasicBot_Linear_FM extends LinearOpMode {
 
             // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
-           //leftPower = -gamepad1.left_stick_y;
-           //rightPower = -gamepad1.right_stick_x;
+            leftPower = -gamepad1.left_stick_y;
+            rightPower = -gamepad1.right_stick_y;
 
             // Send calculated power to wheels
             leftDrive.setPower(leftPower);
@@ -190,8 +177,8 @@ public class BasicBot_Linear_FM extends LinearOpMode {
             telemetry.addData("Encoder value", arm.getCurrentPosition());
             telemetry.addData("Arm Test", arm.getCurrentPosition());
             telemetry.update();
-            }
-
-
+            telemetry.update();
         }
         }
+
+    }

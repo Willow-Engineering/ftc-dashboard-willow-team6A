@@ -29,8 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import android.text.method.Touch;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -45,7 +43,6 @@ import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 
 //whoever changed the motors to leftFront and leftRear instead of leftDrive and same for the right motor, please don't do it again.
 
@@ -74,7 +71,6 @@ public class BasicBot_Linear_FM extends LinearOpMode {
     private DcMotorEx arm = null;
     private Servo claw1 = null;
     private Servo claw2 = null;
-    TouchSensor touch;
     public static int left_claw_open = 0;
     public static int right_claw_open = 5;
     public static int left_claw_close = 5;
@@ -85,8 +81,6 @@ public class BasicBot_Linear_FM extends LinearOpMode {
     static final double COUNTS_PER_DEGREE = COUNTS_PER_GEAR_REV/360;
     public int minPosition = 0;
     public int maxPosition = 500;
-
-
 
 
     @Override
@@ -103,9 +97,6 @@ public class BasicBot_Linear_FM extends LinearOpMode {
         arm = hardwareMap.get(DcMotorEx.class, "arm");
         claw1 = hardwareMap.get(Servo.class, "claw1");
         claw2 = hardwareMap.get(Servo.class, "claw2");
-        touch = hardwareMap.get(TouchSensor.class, "touch");
-
-
 
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -126,13 +117,6 @@ public class BasicBot_Linear_FM extends LinearOpMode {
         arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         arm.setVelocity(200);
 
-
-        if(touch.isPressed()){
-            telemetry.addData("Button Pressed: ", "True");
-        }
-        else{
-            telemetry.addData("Button Pressed: ", "False");
-        }
         while(opModeIsActive()) {
             if (gamepad1.y) {
                 claw1.setPosition(left_claw_open);
@@ -198,8 +182,7 @@ public class BasicBot_Linear_FM extends LinearOpMode {
             telemetry.addData("Encoder value", arm.getCurrentPosition());
             telemetry.addData("Arm Test", arm.getCurrentPosition());
             telemetry.update();
-            }
-
-
         }
         }
+
+    }

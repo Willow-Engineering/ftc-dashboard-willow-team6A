@@ -154,6 +154,7 @@ public class BasicBot_Linear_FM extends LinearOpMode {
                 arm.setPower(0.5);
             }
             else if (gamepad1.dpad_up) {
+                
                 temp = arm.getCurrentPosition();
                 arm.setTargetPosition(temp-70);
                 arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
